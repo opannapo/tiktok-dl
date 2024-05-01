@@ -17,3 +17,7 @@ Options:
  -without-watermark-hd
 
 ```
+
+
+# Output
+![Screenshot from 2024-05-01 23-48-12](https://github.com/opannapo/tiktok-dl/assets/18698574/a969e72c-7529-40d9-a5a4-94017531cedd)
