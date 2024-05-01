@@ -87,9 +87,10 @@ func main() {
 	for _, s := range sources {
 		name := strings.Replace(s, "https://www.tiktok.com/", "", 1)
 		bar := p.AddBar(
-			100, //max 100%
+			100, //max 100%,
 			mpb.PrependDecorators(
-				decor.Name(name),
+				decor.Name(name, decor.WC{C: decor.DindentRight | decor.DextraSpace}),
+				decor.OnComplete(decor.AverageETA(decor.ET_STYLE_GO), "done"),
 			),
 			mpb.AppendDecorators(
 				decor.OnComplete(
