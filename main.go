@@ -96,7 +96,6 @@ func main() {
 					decor.Percentage(), "done",
 				),
 			),
-			mpb.BarWidth(123),
 		)
 
 		// Create dir
