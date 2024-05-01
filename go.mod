@@ -1,4 +1,4 @@
-module tiktok-dl
+module github.com/opannapo/tiktok-dl
 
 go 1.21
 
