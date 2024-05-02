@@ -85,27 +85,43 @@ func main() {
 	_, _ = 100, len(sources)
 	wg.Add(len(sources))
 	for _, s := range sources {
-		name := strings.Replace(s, "https://www.tiktok.com/", "", 1)
-		bar := p.AddBar(
-			100, //max 100%,
-			mpb.PrependDecorators(
-				decor.Name(name, decor.WC{C: decor.DindentRight | decor.DextraSpace}),
-				decor.OnComplete(decor.AverageETA(decor.ET_STYLE_GO), "done"),
-			),
-			mpb.AppendDecorators(
-				decor.OnComplete(
-					decor.Percentage(), "done",
-				),
-			),
-		)
-
 		// Create dir
 		outputPath := createDir(s)
 		source := s
-		go func() {
-			defer wg.Done()
-			exec(client, *token, source, outputPath, bar)
-		}()
+		name := strings.Replace(s, "https://www.tiktok.com/", "", 1)
+
+		if _, err := os.Stat(outputPath); os.IsNotExist(err) {
+			bar := p.AddBar(
+				100, //max 100%,
+				mpb.PrependDecorators(
+					decor.Name(name, decor.WC{C: decor.DSyncWidth | decor.DindentRight | decor.DextraSpace}),
+					decor.OnComplete(decor.AverageETA(decor.ET_STYLE_GO), "0s"),
+				),
+				mpb.AppendDecorators(
+					decor.OnComplete(
+						decor.Percentage(), "done",
+					),
+				),
+			)
+			go func() {
+				defer wg.Done()
+				exec(client, *token, source, outputPath, bar)
+			}()
+		} else {
+			bar := p.AddBar(
+				100, //max 100%,
+				mpb.PrependDecorators(
+					decor.Name(name, decor.WC{C: decor.DSyncWidth | decor.DindentRight}),
+				),
+				mpb.AppendDecorators(
+					decor.OnComplete(
+						decor.Percentage(), "already exists",
+					),
+				),
+			)
+			bar.SetCurrent(100)
+			wg.Done()
+		}
 	}
 
 	wg.Wait()
@@ -269,7 +285,7 @@ func createDir(originSource string) (outputPath string) {
 		}
 	}
 
-	fileName := fmt.Sprintf("%s-%s-%d.mp4", username, videoFileName[len(videoFileName)-1], time.Now().UnixNano())
+	fileName := fmt.Sprintf("%s-%s.mp4", username, videoFileName[len(videoFileName)-1])
 	outputPath = fmt.Sprintf("%s/%s", username, fileName)
 
 	return
