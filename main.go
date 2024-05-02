@@ -58,11 +58,11 @@ func main() {
 	flag.Parse()
 
 	if len(os.Args) == 1 {
-		fmt.Println(emptyOptionMsg)
+		fmt.Print(emptyOptionMsg)
 		return
 	}
 	if fileLinks == "" {
-		fmt.Println(emptyOptionMsg)
+		fmt.Print(emptyOptionMsg)
 		return
 	}
 
@@ -90,34 +90,33 @@ func main() {
 		source := s
 		name := strings.Replace(s, "https://www.tiktok.com/", "", 1)
 
+		//bar for invalid link
+		if !isValidLink(s) {
+			bar := p.AddBar(100, //max 100%,
+				mpb.PrependDecorators(decor.Name(s, decor.WC{C: decor.DSyncWidth | decor.DindentRight})),
+				mpb.AppendDecorators(decor.OnComplete(decor.Percentage(), "invalid link")),
+			)
+			bar.SetCurrent(100)
+			wg.Done()
+			continue
+		}
+
 		if _, err := os.Stat(outputPath); os.IsNotExist(err) {
-			bar := p.AddBar(
-				100, //max 100%,
+			bar := p.AddBar(100, //max 100%,
 				mpb.PrependDecorators(
 					decor.Name(name, decor.WC{C: decor.DSyncWidth | decor.DindentRight | decor.DextraSpace}),
 					decor.OnComplete(decor.AverageETA(decor.ET_STYLE_GO), "0s"),
 				),
-				mpb.AppendDecorators(
-					decor.OnComplete(
-						decor.Percentage(), "done",
-					),
-				),
+				mpb.AppendDecorators(decor.OnComplete(decor.Percentage(), "done")),
 			)
 			go func() {
 				defer wg.Done()
 				exec(client, *token, source, outputPath, bar)
 			}()
 		} else {
-			bar := p.AddBar(
-				100, //max 100%,
-				mpb.PrependDecorators(
-					decor.Name(name, decor.WC{C: decor.DSyncWidth | decor.DindentRight}),
-				),
-				mpb.AppendDecorators(
-					decor.OnComplete(
-						decor.Percentage(), "already exists",
-					),
-				),
+			bar := p.AddBar(100, //max 100%,
+				mpb.PrependDecorators(decor.Name(name, decor.WC{C: decor.DSyncWidth | decor.DindentRight})),
+				mpb.AppendDecorators(decor.OnComplete(decor.Percentage(), "already exists")),
 			)
 			bar.SetCurrent(100)
 			wg.Done()
@@ -150,6 +149,11 @@ func readLinksFile(fileLocation string) (result []string) {
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
+		line := scanner.Text()
+		if len(line) == 0 {
+			continue // Skip empty lines
+		}
+
 		result = append(result, scanner.Text())
 	}
 
@@ -327,4 +331,10 @@ func download(client *http.Client, outputPath, selectedlink string, bar *mpb.Bar
 		fmt.Println(" > Error downloading file:", err)
 		return
 	}
+}
+
+func isValidLink(link string) bool {
+	pattern := `^https://(?:www\.)?tiktok\.com/@[a-zA-Z0-9_]+/video/[0-9]+$`
+	re := regexp.MustCompile(pattern)
+	return re.MatchString(link)
 }
