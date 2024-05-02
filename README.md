@@ -20,5 +20,5 @@ Options:
 
 
 # Output
-![Screenshot from 2024-05-01 23-48-12](https://github.com/opannapo/tiktok-dl/assets/18698574/a969e72c-7529-40d9-a5a4-94017531cedd)
+![Screenshot from 2024-05-02 17-59-09](https://github.com/opannapo/tiktok-dl/assets/18698574/25b2410c-b1f9-4bf7-83aa-80ff9f576e2d)
 ![Screenshot from 2024-05-01 23-55-07](https://github.com/opannapo/tiktok-dl/assets/18698574/1a158d8e-1f71-4e31-babb-80dceb24ea2a)
